@@ -1,0 +1,120 @@
+/////////////// STEP 1:  SET UP INITIAL PARAMETERS /////////////////////
+
+// Set up queryURL to the get earthquake data 
+var queryURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+
+// Create the map object with options
+var myMap = L.map("map", {
+    center: [36.7783, -119.4179],
+    zoom: 2
+});
+
+// Create tile layer
+var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+    maxZoom: 18,
+    id: "light-v10",
+    accessToken: API_KEY
+}).addTo(myMap);
+
+// Set up basemaps
+var basemaps = { 
+    "Light Map": lightmap
+};
+
+// Set up layerGroups
+var quake_layer = new L.LayerGroup()
+
+var dataLayers = {
+    "Earthquakes": quake_layer
+};
+
+// Add toggle option
+L.control.layers(basemaps, dataLayers,{
+    collapsed: true
+}).addTo(myMap);
+
+// Create markerSize function 
+function markerSize(magnitude) {
+    return magnitude * 2
+    };
+
+// Create marker color function    
+function chooseColor(depth) {
+    switch(true) {
+        case depth > 90:
+            return "red";
+        case depth > 70:
+            return "orangered";
+        case depth > 50:
+            return "orange";
+        case depth > 30:
+            return "gold";
+        case depth > 10:
+            return "yellow";
+        default:
+            return "green";
+        }
+    };
+
+// Add an object legend 
+var legend = L.control({
+    position: "bottomright"
+});
+
+//Details for legend
+legend.onAdd = function () {
+    var div = L.DomUtil.create("div", "info legend");
+    div.innerHTML += "<h2> Legend <hr>"
+    var grades = [10, 30, 50, 70, 90];
+    var colors = ["red", "orangered", "orange", "gold", "yellow", "green"];
+
+    //Looping through legend entries
+    for (var i =0; i < grades.length; i++) {
+        div.innerHTML +=
+        "<h4>" + "<i style='background: " + colors[i] + "'></i>" +
+        grades[i] +(grades[i +1] ? "&ndash;" + grades[i+1] + "<br>" : "+"); 
+    }
+    return div;
+}
+legend.addTo(myMap);
+
+
+/////////////// STEP 2: PERFORM API CALL AND CREATE GEOJSON /////////////////////
+
+// API Call
+d3.json(queryURL).then(function(data) {
+    function styleInfo(feature) {
+        return {
+            opacity: 1,
+            fillOpacity: .7,
+            fillColor:chooseColor(feature.geometry.coordinates[2]),
+            color: "#000000",
+            radius: markerSize(feature.properties.mag),
+            stroke: true,
+            weight: 0.3
+        };
+    }
+
+    // Create GeoJSON and pointToLayer function
+    L.geoJson(data, {
+        pointToLayer: function(feature, latlng) {
+            return L.circleMarker(latlng);
+        },
+    
+        // Add styleInfo and bind popup 
+        style: styleInfo, onEachFeature: function(feature, layer) {
+            layer.bindPopup("<h3>Location: " + feature.properties.place + "</h3><hr><p> Date: " + 
+            new Date(feature.properties.time) + "</p><hr><p>Magnitude: " + feature.properties.mag + "</p>");
+        }
+    }).addTo(quake_layer);
+
+    // Add quake layer to default view
+    quake_layer.addTo(myMap);
+
+    //Loop through the features array
+    for (var i = 0; i < features.length; i++) {
+        var feature = features[i]
+    };
+});
+
