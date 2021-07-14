@@ -2,11 +2,12 @@
 
 // Set up queryURL to the get earthquake data 
 var queryURL = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
+var platesURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_plates.json"
 
 // Create the map object with options
 var myMap = L.map("map", {
-    center: [36.7783, -119.4179],
-    zoom: 2
+    center: [17.5707, -3.9962],
+    zoom: 2.5
 });
 
 // Create tile layer
@@ -24,14 +25,16 @@ var basemaps = {
 
 // Set up layerGroups
 var quake_layer = new L.LayerGroup()
+var plates_layer = new L.LayerGroup()
 
 var dataLayers = {
-    "Earthquakes": quake_layer
+    "Earthquakes": quake_layer,
+    "Tectonic Plates": plates_layer
 };
 
 // Add toggle option
 L.control.layers(basemaps, dataLayers,{
-    collapsed: true
+    collapsed: false
 }).addTo(myMap);
 
 // Create markerSize function 
@@ -59,20 +62,20 @@ function chooseColor(depth) {
 
 // Add an object legend 
 var legend = L.control({
-    position: "bottomright"
+    position: "bottomright",
 });
 
 //Details for legend
 legend.onAdd = function () {
     var div = L.DomUtil.create("div", "info legend");
-    div.innerHTML += "<h2> Legend <hr>"
+    div.innerHTML += "<h3 style=text-align:center> Depth <hr>";
     var grades = [10, 30, 50, 70, 90];
-    var colors = ["red", "orangered", "orange", "gold", "yellow", "green"];
+
 
     //Looping through legend entries
     for (var i =0; i < grades.length; i++) {
         div.innerHTML +=
-        "<h4>" + "<i style='background: " + colors[i] + "'></i>" +
+        "<p>" + "<div class = i style='height: 20px; width: 20px; background-color: " + chooseColor(grades[i]) + "'></div>" +
         grades[i] +(grades[i +1] ? "&ndash;" + grades[i+1] + "<br>" : "+"); 
     }
     return div;
@@ -96,7 +99,7 @@ d3.json(queryURL).then(function(data) {
         };
     }
 
-    // Create GeoJSON and pointToLayer function
+    // Create GeoJSON and pointToLayer function for quakes
     L.geoJson(data, {
         pointToLayer: function(feature, latlng) {
             return L.circleMarker(latlng);
@@ -116,5 +119,18 @@ d3.json(queryURL).then(function(data) {
     for (var i = 0; i < features.length; i++) {
         var feature = features[i]
     };
+});
+
+// Create GeoJSON for tectonic plates
+d3.json(platesURL).then(function(data){
+    L.geoJson(data, {
+        color:"orange",
+        fillColor: "none",
+        weight: 1.5,
+        borderradius: "none"
+    }).addTo(plates_layer);
+
+    // Add paltes layer to default view
+    plates_layer.addTo(myMap);
 });
 
