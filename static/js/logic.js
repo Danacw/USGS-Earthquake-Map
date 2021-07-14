@@ -7,7 +7,8 @@ var platesURL = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/
 // Create the map object with options
 var myMap = L.map("map", {
     center: [17.5707, -3.9962],
-    zoom: 2.5
+    zoom: 2.5,
+    minZoom: 2.5
 });
 
 // Create tile layer
@@ -16,11 +17,37 @@ var lightmap = L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{
     maxZoom: 18,
     id: "light-v10",
     accessToken: API_KEY
+})
+
+var outdoorsMap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+  attribution: "Map data &copy; <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
+  tileSize: 512,
+  maxZoom: 18,
+  zoomOffset: -1,
+  id: "mapbox/outdoors-v11",
+  accessToken: API_KEY
+})
+
+var satellite = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}",{
+    id: "mapbox.satellite",
+    maxZoom: 18,
+    accessToken: API_KEY  
 }).addTo(myMap);
+; 
+
+var darkmap =  L.tileLayer("https://api.mapbox.com/styles/v1/mapbox/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
+    attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",
+    maxZoom: 18,
+    id:"dark-v10",
+    accessToken: API_KEY
+})
 
 // Set up basemaps
 var basemaps = { 
-    "Light Map": lightmap
+    "Satellite": satellite,
+    "Light Map": lightmap,
+    "Outdoor Map": outdoorsMap,
+    "Dark Map": darkmap
 };
 
 // Set up layerGroups
@@ -39,7 +66,7 @@ L.control.layers(basemaps, dataLayers,{
 
 // Create markerSize function 
 function markerSize(magnitude) {
-    return magnitude * 2
+    return magnitude * 2.5
     };
 
 // Create marker color function    
@@ -56,7 +83,7 @@ function chooseColor(depth) {
         case depth > 10:
             return "yellow";
         default:
-            return "green";
+            return "limegreen";
         }
     };
 
@@ -68,7 +95,7 @@ var legend = L.control({
 //Details for legend
 legend.onAdd = function () {
     var div = L.DomUtil.create("div", "info legend");
-    div.innerHTML += "<h3 style=text-align:center> Depth <hr>";
+    div.innerHTML += "<h6 style=text-align:center> Depth <hr>";
     var grades = [10, 30, 50, 70, 90];
 
 
