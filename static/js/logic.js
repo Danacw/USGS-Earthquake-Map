@@ -134,7 +134,7 @@ d3.json(queryURL).then(function(data) {
     
         // Add styleInfo and bind popup 
         style: styleInfo, onEachFeature: function(feature, layer) {
-            layer.bindPopup("<h3>Location: " + feature.properties.place + "</h3><hr><p> Date: " + 
+            layer.bindPopup("<h6> <strong> Location: " + feature.properties.place + "</strong>" + "</h3><hr><p> Date: " + 
             new Date(feature.properties.time) + "</p><hr><p>Magnitude: " + feature.properties.mag + "</p>");
         }
     }).addTo(quake_layer);
