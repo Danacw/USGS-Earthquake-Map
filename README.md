@@ -18,3 +18,4 @@ In this interactive map, users can review earthquake data over a 7-day span with
 **Static/css**
   - style.css: the basic styling of my map and legend. 
 
+![Screen Shot 2021-07-26 at 1 13 07 PM](https://user-images.githubusercontent.com/26308909/127052806-353396d2-f473-4d2f-ae1d-76c41d57f3c5.png)
