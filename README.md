@@ -5,7 +5,7 @@ You can view the interactive map for this challenge here: https://danacw.github.
 In this interactive map, users can review earthquake data over a 7-day span with data from the USGS. Earthquake and tectonic plates layers were added to four different overlay maps, to give users the ability to switch between views. Marker size is based on the magnitude of the quake, while marker color is based on its depth. Users have the ability to click on each marker to view data on time, location, and magnitude of each specific quake. 
 
 **Data Sources:**
-  - Eathquake GeoJson was provided by the USGS with data updating every minute: https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php. 
+  - Eathquake GeoJson was provided by the USGS with data updating every hour: https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php. 
   - Tectonic plates GeoJSON was provided by Fraxen: https://github.com/fraxen/tectonicplates
   - Overlay maps provided through the Mapbox API : https://docs.mapbox.com/api/maps/ 
 
