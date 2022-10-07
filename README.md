@@ -1,4 +1,4 @@
-# Web-Mapping-Challenge
+# USGS Earthquake Map
 
 You can view the interactive map for this challenge here: https://danacw.github.io/USGS-Earthquake-Map/
 
